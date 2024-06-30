@@ -1,5 +1,6 @@
+import 'package:chess_track/pages/add.dart';
+import 'package:chess_track/pages/init.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Chess Track',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Chess Track'),
     );
   }
 }
@@ -31,59 +32,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState(){
-    // super.initState();
-    loadData();
-    setState(() {});
+    super.initState();
   }
 
-  int _counter = 0;
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void loadData() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    int? temp = pref.getInt("count");
-    if( temp == null){
-      _counter = 0;
-    } else {
-      _counter = temp;
-    }
-
-  }
-
-  void clearData() async {
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setInt("count", _counter);
-  }
+  int _currentIndex = 0;
+  final List<Widget> _tabs= [
+    const AddPage(),
+    const InitPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.green,
         title: Text(widget.title),
+        centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:',),
-            Text('$_counter',style: Theme.of(context).textTheme.headlineMedium,),
-            ElevatedButton(
-              onPressed: clearData,
-              child: const Text("Save"),
-            )
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black26,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
+        selectedIconTheme: const IconThemeData(size: 30,),
+        unselectedIconTheme: const IconThemeData(size: 20,),
+        type: BottomNavigationBarType.shifting,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.edit),label: 'Add',backgroundColor: Colors.green),
+          BottomNavigationBarItem(icon: Icon(Icons.remove_red_eye),label: 'Init',backgroundColor: Colors.green),
+        ],
+        onTap: (index){
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: _tabs[_currentIndex],
     );
   }
 }
